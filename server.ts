@@ -15,7 +15,11 @@ const DB_FILE = 'database.db';
 const REQUIRED_SHEETS = ['suppliers', 'associations', 'warehouses', 'petrol', 'gas', 'jamiyati'];
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yelderby_db_user:Joo6226@cluster0.isisuck.mongodb.net/?appName=Cluster';
+const MONGODB_URI = process.env.MONGODB_URI || '';
+
+if (!MONGODB_URI) {
+  console.warn('[DB] Warning: MONGODB_URI is empty. Please set environment variable MONGODB_URI.');
+}
 
 // Define Schemas
 const userSchema = new mongoose.Schema({
@@ -139,10 +143,12 @@ async function initDb() {
       }
 
       await mongoose.connect(MONGODB_URI, {
-        serverSelectionTimeoutMS: 15000, // 15s timeout
+        serverSelectionTimeoutMS: 15000,
         connectTimeoutMS: 15000,
         socketTimeoutMS: 45000,
-      });
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      } as mongoose.ConnectOptions);
       
       console.log('[DB] Connected to MongoDB successfully');
       lastDbError = null;
@@ -353,30 +359,43 @@ async function startServer() {
   // Login API
   app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ status: 'error', message: 'يرجى إدخال اسم مستخدم وكلمة مرور صحيحة' });
+    }
+
     try {
-      const user = await User.findOne({ username, password });
+      console.log(`[API] Login attempt for username=${username}`);
+      const user = await User.findOne({ username: username.trim(), password: password.trim() });
       if (user) {
-        res.json({ status: 'ok', user: { id: user._id, username: user.username, name: user.name, role: user.role } });
-      } else {
-        res.status(401).json({ status: 'error', message: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
+        return res.json({ status: 'ok', user: { id: user._id, username: user.username, name: user.name, role: user.role } });
       }
+      return res.status(401).json({ status: 'error', message: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
     } catch (e) {
-      res.status(500).json({ status: 'error', message: String(e) });
+      console.error('[API] Login error:', e);
+      return res.status(500).json({ status: 'error', message: String(e) });
     }
   });
 
   // Register API
   app.post('/api/register', async (req, res) => {
     const { username, password, name, role } = req.body;
+
+    if (!username || !password || !name) {
+      return res.status(400).json({ status: 'error', message: 'جميع الحقول مطلوبه للتسجيل' });
+    }
+
     try {
-      const existing = await User.findOne({ username });
+      console.log(`[API] Register attempt for username=${username}`);
+      const existing = await User.findOne({ username: username.trim() });
       if (existing) {
         return res.status(400).json({ status: 'error', message: 'اسم المستخدم موجود بالفعل' });
       }
-      const user = await User.create({ username, password, name, role: role || 'viewer' });
-      res.json({ status: 'ok', userId: user._id });
+      const user = await User.create({ username: username.trim(), password: password.trim(), name: name.trim(), role: (role || 'viewer') });
+      return res.json({ status: 'ok', userId: user._id });
     } catch (e) {
-      res.status(500).json({ status: 'error', message: String(e) });
+      console.error('[API] Register error:', e);
+      return res.status(500).json({ status: 'error', message: String(e) });
     }
   });
 
