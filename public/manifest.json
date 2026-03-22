@@ -1,0 +1,16 @@
+{
+  "name": "مديرية التموين - جمعيتي",
+  "short_name": "جمعيتي",
+  "description": "نظام إدارة التوريدات والجمعيات - مديرية التموين",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#059669",
+  "icons": [
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/ar/thumb/2/21/%D8%B4%D8%B9%D8%A7%D8%B1_%D9%88%D8%B2%D8%A7%D8%B1%D9%81_%D8%A7%D9%84%D8%AA%D9%85%D9%88%D9%8A%D9%86_%D9%88%D8%A7%D9%84%D8%AA%D8%AC%D8%A7%D8%B1%D8%A9_%D8%A7%D9%84%D8%AF%D8%AE%D9%84%D9%8I%D8%A9_%D9%85%D8%B5%D8%B1.png/600px-%D8%B4%D8%B9%D8%A7%D8%B1_%D9%88%D8%B2%D8%A7%D8%B1%D9%81_%D8%A7%D9%84%D8%AA%D9%85%D9%88%D9%8A%D9%86_%D9%88%D8%A7%D9%84%D8%AA%D8%AC%D8%A7%D8%B1%D8%A9_%D8%A7%D9%84%D8%AF%D8%AE%D9%84%D9%8A%D8%A9_%D9%85%D8%B5%D8%B1.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
